@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>木工計算工具箱 — 方禾家具</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#3E2723">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="木工工具箱">
+<link rel="apple-touch-icon" href="icons/icon-192x192.png">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--wd:#3E2723;--wm:#5D4037;--wl:#8D6E63;--wp:#D7CCC8;--wc:#EFEBE9;--ag:#F9A825;--aa:#FF8F00;--bg:#FAF6F1;--td:#2C1810;--tm:#5D4037;--tl:#8D6E63;--ok:#2E7D32;--no:#C62828;--cb:#FFF;--ss:0 1px 3px rgba(62,39,35,.08);--sm:0 4px 12px rgba(62,39,35,.1);--sl:0 8px 32px rgba(62,39,35,.12);--r:12px}
+*{margin:0;padding:0;box-sizing:border-box}
+@media all and (display-mode:standalone){.app{padding-top:calc(env(safe-area-inset-top,20px)+12px)}}
+body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--td);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(85deg,transparent,transparent 40px,rgba(139,90,43,.015) 40px,rgba(139,90,43,.015) 41px);pointer-events:none;z-index:0}
+.app{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:20px 16px 40px}
+.hdr{text-align:center;padding:22px 20px 18px;margin-bottom:18px;background:linear-gradient(135deg,var(--wd),var(--wm) 60%,var(--wl));border-radius:16px;overflow:hidden;box-shadow:var(--sl);position:relative}
+.hdr::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 3px,rgba(255,255,255,.02) 3px,rgba(255,255,255,.02) 4px)}
+.hdr h1{font-size:22px;font-weight:900;color:#FFF;letter-spacing:2px;position:relative}
+.hdr .sub{font-size:11px;color:var(--wp);margin-top:3px;font-weight:300;letter-spacing:1px;position:relative}
+.nav{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:18px}
+.nb{display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 3px 8px;background:var(--cb);border:2px solid transparent;border-radius:11px;cursor:pointer;transition:all .2s;box-shadow:var(--ss);font-family:'Noto Sans TC',sans-serif}
+.nb:hover{box-shadow:var(--sm)}
+.nb.on{border-color:var(--ag);background:#FFFDE7;box-shadow:var(--sm)}
+.nb .ni{font-size:20px}
+.nb .nl{font-size:10px;font-weight:600;color:var(--tm);line-height:1.2;text-align:center}
+.nb.on .nl{color:var(--wd)}
+.cd{background:var(--cb);border-radius:var(--r);padding:18px;margin-bottom:12px;box-shadow:var(--ss);border:1px solid rgba(62,39,35,.06);transition:box-shadow .2s}
+.cd:hover{box-shadow:var(--sm)}
+.ct{font-size:13px;font-weight:700;color:var(--wm);margin-bottom:12px;display:flex;align-items:center;gap:7px}
+.ct .ic{font-size:15px}
+.fr{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-bottom:10px}
+.fr.c2{grid-template-columns:1fr 1fr}
+.fg{display:flex;flex-direction:column;gap:3px}
+.fg label{font-size:10px;font-weight:500;color:var(--tl);letter-spacing:.3px}
+.iw{position:relative;display:flex;align-items:center}
+.iw input,.fi{width:100%;padding:8px 10px;padding-right:36px;border:1.5px solid var(--wp);border-radius:7px;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--td);background:var(--bg);transition:border-color .2s,box-shadow .2s;outline:none}
+.iw input:focus,.fi:focus{border-color:var(--ag);box-shadow:0 0 0 3px rgba(249,168,37,.15)}
+.iu{position:absolute;right:8px;font-size:10px;color:var(--tl);font-weight:500;pointer-events:none}
+select{width:100%;padding:8px 10px;border:1.5px solid var(--wp);border-radius:7px;font-family:'Noto Sans TC',sans-serif;font-size:12px;color:var(--td);background:var(--bg);outline:none;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238D6E63' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 9px center}
+select:focus{border-color:var(--ag);box-shadow:0 0 0 3px rgba(249,168,37,.15)}
+.us{display:flex;gap:4px;margin-bottom:12px}
+.ub{padding:5px 10px;border:1.5px solid var(--wp);background:transparent;border-radius:6px;font-family:'Noto Sans TC',sans-serif;font-size:11px;color:var(--tm);cursor:pointer;transition:all .2s;font-weight:500}
+.ub:hover{border-color:var(--wl)}
+.ub.on{background:var(--wd);color:#FFF;border-color:var(--wd)}
+.bc{width:100%;padding:12px;background:linear-gradient(135deg,var(--aa),var(--ag));border:none;border-radius:9px;color:#FFF;font-family:'Noto Sans TC',sans-serif;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:2px;transition:all .2s;box-shadow:0 4px 15px rgba(249,168,37,.3);margin-top:4px}
+.bc:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(249,168,37,.4)}
+.bc:active{transform:translateY(0)}
+.ba{width:100%;padding:10px;background:var(--wm);border:none;border-radius:9px;color:#FFF;font-family:'Noto Sans TC',sans-serif;font-size:12px;font-weight:600;cursor:pointer;letter-spacing:1px;transition:all .2s;margin-top:4px}
+.ba:hover{background:var(--wd)}
+.bx{width:100%;padding:10px;background:transparent;border:1.5px solid var(--no);border-radius:9px;color:var(--no);font-family:'Noto Sans TC',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s}
+.bx:hover{background:var(--no);color:#FFF}
+.br{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:7px}
+.rp{background:linear-gradient(135deg,var(--wc),#FFF);border:2px solid var(--ag);border-radius:var(--r);padding:16px;margin-top:12px;display:none;animation:su .3s ease}
+@keyframes su{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.rp.show{display:block}
+.rm{text-align:center;margin-bottom:10px}
+.rv{font-family:'JetBrains Mono',monospace;font-size:30px;font-weight:600;color:var(--wd);line-height:1.2}
+.ru{font-size:13px;color:var(--tl);font-weight:500}
+.rc{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.rc3{grid-template-columns:1fr 1fr 1fr}
+.ci{background:rgba(255,255,255,.7);border-radius:7px;padding:8px 9px;text-align:center}
+.cl{font-size:9px;color:var(--tl);margin-bottom:1px}
+.cv{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600;color:var(--tm)}
+.lr{display:flex;align-items:center;gap:7px;margin-top:9px;flex-wrap:wrap}
+.lr label{font-size:11px;color:var(--tm);font-weight:500}
+.li{width:55px;padding:6px;border:1.5px solid var(--wp);border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:12px;text-align:center;outline:none;background:var(--bg)}
+.li:focus{border-color:var(--ag);box-shadow:0 0 0 3px rgba(249,168,37,.15)}
+.lv{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--aa)}
+.bi{display:flex;align-items:center;justify-content:space-between;padding:8px 11px;background:var(--bg);border-radius:7px;margin-bottom:4px;font-size:11px;animation:su .2s ease}
+.bi-i{flex:1;font-family:'JetBrains Mono',monospace;color:var(--td);font-size:11px}
+.bi-r{font-family:'JetBrains Mono',monospace;font-weight:600;color:var(--wd);margin:0 9px;font-size:12px}
+.bi .bd{background:none;border:none;color:var(--no);cursor:pointer;font-size:14px;padding:2px;opacity:.6;transition:opacity .2s}
+.bi .bd:hover{opacity:1}
+.bt{display:flex;justify-content:space-between;align-items:center;padding:11px 13px;background:var(--wd);color:#FFF;border-radius:9px;margin-top:7px}
+.bt-l{font-size:13px;font-weight:700;letter-spacing:1px}
+.bt-v{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:600}
+.es{text-align:center;padding:20px;color:var(--tl);font-size:12px}
+.es .ic{font-size:24px;margin-bottom:4px}
+.rt{width:100%;border-collapse:collapse;margin-top:7px;font-size:11px}
+.rt th{background:var(--wc);padding:6px 7px;text-align:left;font-weight:600;color:var(--tm);border-bottom:2px solid var(--wp);font-size:10px}
+.rt td{padding:6px 7px;border-bottom:1px solid var(--wc);font-family:'JetBrains Mono',monospace;font-size:11px}
+.rt tr:hover{background:var(--wc)}
+.pg{display:none}
+.pg.on{display:block}
+.st{display:flex;gap:4px;margin-bottom:12px}
+.stb{flex:1;padding:8px 5px;border:1.5px solid var(--wp);background:transparent;border-radius:7px;font-family:'Noto Sans TC',sans-serif;font-size:11px;font-weight:500;color:var(--tm);cursor:pointer;transition:all .2s;text-align:center}
+.stb:hover{border-color:var(--wl)}
+.stb.on{background:var(--wd);color:#FFF;border-color:var(--wd)}
+.sc{display:none}
+.sc.on{display:block}
+.sri{display:flex;justify-content:space-between;padding:7px 10px;background:var(--bg);border-radius:6px;margin-bottom:3px;font-size:12px}
+.sri .sl{color:var(--tm)}
+.sri .sv{font-family:'JetBrains Mono',monospace;font-weight:600;color:var(--wd)}
+.qs{background:var(--wd);color:#FFF;border-radius:9px;padding:14px;margin-top:10px}
+.qr{display:flex;justify-content:space-between;padding:5px 0;font-size:12px;border-bottom:1px solid rgba(255,255,255,.1)}
+.qr:last-child{border:none}
+.qr .ql{color:var(--wp)}
+.qr .qv{font-family:'JetBrains Mono',monospace;font-weight:600}
+.qt{display:flex;justify-content:space-between;padding:9px 0 0;font-size:17px;font-weight:700;border-top:2px solid var(--ag);margin-top:5px}
+.ft{text-align:center;margin-top:20px;padding:12px;font-size:10px;color:var(--tl);border-top:1px solid var(--wp)}
+@media(max-width:480px){.nav{gap:5px}.nb{padding:8px 2px 6px}.nb .ni{font-size:18px}.nb .nl{font-size:9px}.fr{grid-template-columns:1fr 1fr;gap:7px}.rv{font-size:24px}.cd{padding:14px}.hdr h1{font-size:19px}}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="hdr"><h1>🪵 木工計算工具箱</h1><div class="sub">方禾家具 ─ FANGHE FURNITURE</div></div>
+<!-- NAV -->
+<div class="nav">
+<button class="nb on" onclick="goPage('timber',this)"><span class="ni">📐</span><span class="nl">材數計算</span></button>
+<button class="nb" onclick="goPage('cut',this)"><span class="ni">🪚</span><span class="nl">裁切優化</span></button>
+<button class="nb" onclick="goPage('angle',this)"><span class="ni">📏</span><span class="nl">角度斜切</span></button>
+<button class="nb" onclick="goPage('spacing',this)"><span class="ni">🔩</span><span class="nl">間距等分</span></button>
+<button class="nb" onclick="goPage('quote',this)"><span class="ni">💰</span><span class="nl">報價快算</span></button>
+<button class="nb" onclick="goPage('convert',this)"><span class="ni">🔄</span><span class="nl">單位換算</span></button>
+<button class="nb" onclick="goPage('ref',this)"><span class="ni">📖</span><span class="nl">參考表</span></button>
+</div>
+
+<!-- ===== PAGE: TIMBER ===== -->
+<div id="pg-timber" class="pg on">
+<div class="st">
+<button class="stb on" onclick="sTab('timber','single',this)">單件計算</button>
+<button class="stb" onclick="sTab('timber','batch',this)">批次估料</button>
+</div>
+<div id="timber-single" class="sc on">
+<div class="cd">
+<div class="ct"><span class="ic">📏</span>輸入尺寸</div>
+<div style="margin-bottom:10px"><label style="font-size:10px;font-weight:500;color:var(--tl);display:block;margin-bottom:3px">輸入單位</label>
+<div class="us"><button class="ub on" onclick="setU('cm',this)">cm</button><button class="ub" onclick="setU('inch',this)">英吋</button><button class="ub" onclick="setU('chi',this)">台尺/寸</button></div></div>
+<div class="fr" id="icm">
+<div class="fg"><label>長度</label><div class="iw"><input type="number" id="sl" step="any" placeholder="0"><span class="iu" id="ul">cm</span></div></div>
+<div class="fg"><label>寬度</label><div class="iw"><input type="number" id="sw" step="any" placeholder="0"><span class="iu" id="uw">cm</span></div></div>
+<div class="fg"><label>厚度</label><div class="iw"><input type="number" id="st" step="any" placeholder="0"><span class="iu" id="ut">cm</span></div></div>
+</div>
+<div class="fr" id="ichi" style="display:none">
+<div class="fg"><label>長(台尺)</label><div class="iw"><input type="number" id="slc" step="any" placeholder="0"><span class="iu">尺</span></div></div>
+<div class="fg"><label>寬(台尺)</label><div class="iw"><input type="number" id="swc" step="any" placeholder="0"><span class="iu">尺</span></div></div>
+<div class="fg"><label>厚(台寸)</label><div class="iw"><input type="number" id="stc" step="any" placeholder="0"><span class="iu">寸</span></div></div>
+</div>
+<div class="fr c2">
+<div class="fg"><label>數量</label><div class="iw"><input type="number" id="sq" value="1" min="1"><span class="iu">支</span></div></div>
+<div class="fg"><label>形狀</label><select id="ss"><option value="r">方材/板材</option><option value="c">圓木</option></select></div>
+</div>
+<button class="bc" onclick="calcS()">計 算</button>
+<div id="sr" class="rp">
+<div class="rm"><div class="rv" id="srm">0</div><div class="ru">台才</div></div>
+<div class="rc">
+<div class="ci"><div class="cl">材（石）</div><div class="cv" id="srs">0</div></div>
+<div class="ci"><div class="cl">板呎(BF)</div><div class="cv" id="srb">0</div></div>
+<div class="ci"><div class="cl">m³</div><div class="cv" id="sr3">0</div></div>
+<div class="ci"><div class="cl">cm³</div><div class="cv" id="src">0</div></div>
+</div>
+<div class="lr"><label>損耗率</label><input type="number" class="li" id="slo" value="15" min="0" max="100"><span style="font-size:11px">%</span><span style="font-size:11px;color:var(--tl)">→備料</span><span class="lv" id="srl">0才</span></div>
+</div></div></div>
+
+<div id="timber-batch" class="sc">
+<div class="cd">
+<div class="ct"><span class="ic">📋</span>批次加入</div>
+<div class="us"><button class="ub on" onclick="setBU('cm',this)">cm</button><button class="ub" onclick="setBU('inch',this)">英吋</button><button class="ub" onclick="setBU('chi',this)">台尺/寸</button></div>
+<div class="fg" style="margin-bottom:8px"><label>品名</label><input type="text" id="bn" class="fi" placeholder="例：桌面板" style="padding-right:10px"></div>
+<div class="fr" id="bcm">
+<div class="fg"><label>長</label><div class="iw"><input type="number" id="bl" step="any"><span class="iu" id="bul">cm</span></div></div>
+<div class="fg"><label>寬</label><div class="iw"><input type="number" id="bw" step="any"><span class="iu" id="buw">cm</span></div></div>
+<div class="fg"><label>厚</label><div class="iw"><input type="number" id="bt" step="any"><span class="iu" id="but">cm</span></div></div>
+</div>
+<div class="fr" id="bchi" style="display:none">
+<div class="fg"><label>長(尺)</label><div class="iw"><input type="number" id="blc" step="any"><span class="iu">尺</span></div></div>
+<div class="fg"><label>寬(尺)</label><div class="iw"><input type="number" id="bwc" step="any"><span class="iu">尺</span></div></div>
+<div class="fg"><label>厚(寸)</label><div class="iw"><input type="number" id="btc" step="any"><span class="iu">寸</span></div></div>
+</div>
+<div class="fr c2">
+<div class="fg"><label>數量</label><div class="iw"><input type="number" id="bq" value="1" min="1"><span class="iu">支</span></div></div>
+<div class="fg"><label>形狀</label><select id="bs"><option value="r">方材</option><option value="c">圓木</option></select></div>
+</div>
+<button class="ba" onclick="addBI()">＋ 加入清單</button>
+</div>
+<div class="cd">
+<div class="ct"><span class="ic">📦</span>用料清單</div>
+<div id="blist"><div class="es"><div class="ic">📭</div><div>尚無項目</div></div></div>
+<div id="btw" style="display:none">
+<div class="bt"><span class="bt-l">合計</span><span class="bt-v" id="btv">0才</span></div>
+<div class="lr" style="margin-top:8px"><label>損耗率</label><input type="number" class="li" id="blo" value="15" min="0" max="100" oninput="updBT()"><span style="font-size:11px">%</span><span style="font-size:11px;color:var(--tl)">→備料</span><span class="lv" id="blv">0才</span></div>
+<div class="br"><button class="ba" onclick="expB()">📄 複製</button><button class="bx" onclick="clrB()">🗑️ 清空</button></div>
+</div></div></div>
+</div>
+<!-- ===== PAGE: CUT OPTIMIZER ===== -->
+<div id="pg-cut" class="pg">
+<div class="cd">
+<div class="ct"><span class="ic">🪚</span>板材裁切優化</div>
+<p style="font-size:11px;color:var(--tl);margin-bottom:12px">輸入原板尺寸和需要的部件，自動計算最省料排列。</p>
+<div class="fr c2">
+<div class="fg"><label>板材長度</label><div class="iw"><input type="number" id="cbl" value="240" step="any"><span class="iu">cm</span></div></div>
+<div class="fg"><label>板材寬度</label><div class="iw"><input type="number" id="cbw" value="120" step="any"><span class="iu">cm</span></div></div>
+</div>
+<div class="fr c2">
+<div class="fg"><label>鋸路寬度</label><div class="iw"><input type="number" id="ckf" value="0.3" step="0.1"><span class="iu">cm</span></div></div>
+<div class="fg">&nbsp;</div>
+</div>
+<div style="margin-top:6px">
+<div class="ct" style="margin-bottom:6px"><span class="ic">📝</span>需求部件</div>
+<div id="cpl"></div>
+<div class="fr">
+<div class="fg"><label>長</label><div class="iw"><input type="number" id="cpl2" step="any" placeholder="0"><span class="iu">cm</span></div></div>
+<div class="fg"><label>寬</label><div class="iw"><input type="number" id="cpw" step="any" placeholder="0"><span class="iu">cm</span></div></div>
+<div class="fg"><label>數量</label><div class="iw"><input type="number" id="cpq" value="1" min="1"><span class="iu">片</span></div></div>
+</div>
+<div class="fg" style="margin-bottom:6px"><label>品名</label><input type="text" id="cpn" class="fi" placeholder="例：側板" style="padding-right:10px"></div>
+<button class="ba" onclick="addCP()">＋ 加入部件</button>
+</div>
+<button class="bc" onclick="runCO()" style="margin-top:6px">開始排版計算</button>
+<div id="cres" style="display:none;margin-top:12px">
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+<div class="ci" style="flex:1;min-width:80px"><div class="cl">需要板材</div><div class="cv" id="crs">0</div></div>
+<div class="ci" style="flex:1;min-width:80px"><div class="cl">利用率</div><div class="cv" id="cru">0%</div></div>
+<div class="ci" style="flex:1;min-width:80px"><div class="cl">廢料</div><div class="cv" id="crw">0cm²</div></div>
+</div>
+<div id="cbd"></div>
+</div></div></div>
+
+<!-- ===== PAGE: ANGLE ===== -->
+<div id="pg-angle" class="pg">
+<div class="st">
+<button class="stb on" onclick="sTab('angle','poly',this)">多邊形拼接</button>
+<button class="stb" onclick="sTab('angle','miter',this)">斜切角度</button>
+<button class="stb" onclick="sTab('angle','trig',this)">三角函數</button>
+</div>
+<div id="angle-poly" class="sc on">
+<div class="cd">
+<div class="ct"><span class="ic">⬡</span>正多邊形拼接角度</div>
+<p style="font-size:11px;color:var(--tl);margin-bottom:10px">計算正多邊形框架每支料的鋸切角度。</p>
+<div class="fr c2">
+<div class="fg"><label>邊數</label><select id="ags" onchange="calcPG()"><option value="3">三角形(3)</option><option value="4">正方形(4)</option><option value="5">五邊形(5)</option><option value="6" selected>六邊形(6)</option><option value="8">八邊形(8)</option><option value="10">十邊形(10)</option><option value="12">十二邊形(12)</option></select></div>
+<div class="fg"><label>每邊外長</label><div class="iw"><input type="number" id="agsd" value="30" step="any" oninput="calcPG()"><span class="iu">cm</span></div></div>
+</div>
+<div class="rp show" style="display:block;margin-top:8px">
+<div class="rc rc3">
+<div class="ci"><div class="cl">鋸台角度</div><div class="cv" id="pgm">30°</div></div>
+<div class="ci"><div class="cl">內角</div><div class="cv" id="pgi">120°</div></div>
+<div class="ci"><div class="cl">外接圓⌀</div><div class="cv" id="pgc">60cm</div></div>
+</div></div>
+<canvas id="pgcv" width="280" height="200" style="display:block;margin:10px auto 0"></canvas>
+</div></div>
+
+<div id="angle-miter" class="sc">
+<div class="cd">
+<div class="ct"><span class="ic">📐</span>兩板交角斜切</div>
+<p style="font-size:11px;color:var(--tl);margin-bottom:10px">兩塊板以指定角度相接，計算鋸台角度。</p>
+<div class="fr c2">
+<div class="fg"><label>交角角度</label><div class="iw"><input type="number" id="mta" value="90" step="any" oninput="calcMT()"><span class="iu">度</span></div></div>
+<div class="fg"><label>板厚(選填)</label><div class="iw"><input type="number" id="mtt" step="any" placeholder="—"><span class="iu">cm</span></div></div>
+</div>
+<div class="rp show" style="display:block;margin-top:8px">
+<div class="rm"><div class="rv" id="mtc">45°</div><div class="ru">每片鋸台設定角度</div></div>
+<p style="text-align:center;font-size:11px;color:var(--tl);margin-top:4px">鋸台角度 = 交角 ÷ 2</p>
+</div></div></div>
+
+<div id="angle-trig" class="sc">
+<div class="cd">
+<div class="ct"><span class="ic">📐</span>直角三角形計算</div>
+<p style="font-size:11px;color:var(--tl);margin-bottom:10px">已知任意兩邊，算出第三邊與角度。</p>
+<div class="fr">
+<div class="fg"><label>底邊(a)</label><div class="iw"><input type="number" id="ta" step="any" placeholder="?" oninput="calcTR()"><span class="iu">cm</span></div></div>
+<div class="fg"><label>高(b)</label><div class="iw"><input type="number" id="tb" step="any" placeholder="?" oninput="calcTR()"><span class="iu">cm</span></div></div>
+<div class="fg"><label>斜邊(c)</label><div class="iw"><input type="number" id="tc" step="any" placeholder="?" oninput="calcTR()"><span class="iu">cm</span></div></div>
+</div>
+<div class="rp show" style="display:block;margin-top:8px">
+<div class="rc rc3">
+<div class="ci"><div class="cl">底邊a</div><div class="cv" id="tra">—</div></div>
+<div class="ci"><div class="cl">高b</div><div class="cv" id="trb">—</div></div>
+<div class="ci"><div class="cl">斜邊c</div><div class="cv" id="trc">—</div></div>
+<div class="ci"><div class="cl">角A</div><div class="cv" id="trA">—</div></div>
+<div class="ci"><div class="cl">角B</div><div class="cv" id="trB">—</div></div>
+<div class="ci"><div class="cl">坡度</div><div class="cv" id="trS">—</div></div>
+</div></div></div></div>
+</div>
+
+<!-- ===== PAGE: SPACING ===== -->
+<div id="pg-spacing" class="pg">
+<div class="st">
+<button class="stb on" onclick="sTab('spacing','eq',this)">等距排列</button>
+<button class="stb" onclick="sTab('spacing','circ',this)">圓周孔位</button>
+</div>
+<div id="spacing-eq" class="sc on">
+<div class="cd">
+<div class="ct"><span class="ic">🔩</span>等距排列計算</div>
+<p style="font-size:11px;color:var(--tl);margin-bottom:10px">螺絲、鉸鏈等等距排列，計算間距與各點位置。</p>
+<div class="fr c2">
+<div class="fg"><label>總長度</label><div class="iw"><input type="number" id="spt" step="any" placeholder="0" oninput="calcSP()"><span class="iu">cm</span></div></div>
+<div class="fg"><label>數量(含兩端)</label><div class="iw"><input type="number" id="spn" value="5" min="2" oninput="calcSP()"><span class="iu">個</span></div></div>
+</div>
+<div class="fr c2">
+<div class="fg"><label>起始偏移</label><div class="iw"><input type="number" id="sps" value="0" step="any" oninput="calcSP()"><span class="iu">cm</span></div></div>
+<div class="fg"><label>末端偏移</label><div class="iw"><input type="number" id="spe" value="0" step="any" oninput="calcSP()"><span class="iu">cm</span></div></div>
+</div>
+<div id="spr" style="margin-top:8px"></div>
+</div></div>
+
+<div id="spacing-circ" class="sc">
+<div class="cd">
+<div class="ct"><span class="ic">⚙️</span>圓周孔位計算</div>
+<p style="font-size:11px;color:var(--tl);margin-bottom:10px">圓形排列各孔的X/Y座標。</p>
+<div class="fr">
+<div class="fg"><label>半徑</label><div class="iw"><input type="number" id="chr" value="10" step="any" oninput="calcCH()"><span class="iu">cm</span></div></div>
+<div class="fg"><label>孔數</label><div class="iw"><input type="number" id="chn" value="6" min="2" oninput="calcCH()"><span class="iu">個</span></div></div>
+<div class="fg"><label>起始角</label><div class="iw"><input type="number" id="chs" value="0" step="any" oninput="calcCH()"><span class="iu">度</span></div></div>
+</div>
+<div id="chres" style="margin-top:8px"></div>
+</div></div>
+</div>
+<!-- ===== PAGE: QUOTE ===== -->
+<div id="pg-quote" class="pg">
+<div class="cd">
+<div class="ct"><span class="ic">💰</span>報價快算</div>
+<div class="ct" style="font-size:12px"><span class="ic">🪵</span>材料費</div>
+<div class="fr">
+<div class="fg"><label>用料(才)</label><div class="iw"><input type="number" id="qc" step="any" placeholder="0" oninput="calcQ()"><span class="iu">才</span></div></div>
+<div class="fg"><label>單價(元/才)</label><div class="iw"><input type="number" id="qp" step="any" placeholder="0" oninput="calcQ()"><span class="iu">元</span></div></div>
+<div class="fg"><label>損耗率</label><div class="iw"><input type="number" id="ql" value="15" step="any" oninput="calcQ()"><span class="iu">%</span></div></div>
+</div>
+<div class="ct" style="font-size:12px;margin-top:12px"><span class="ic">🔧</span>工時費</div>
+<div class="fr c2">
+<div class="fg"><label>工時</label><div class="iw"><input type="number" id="qh" step="any" placeholder="0" oninput="calcQ()"><span class="iu">小時</span></div></div>
+<div class="fg"><label>時薪</label><div class="iw"><input type="number" id="qr" value="350" step="any" oninput="calcQ()"><span class="iu">元/hr</span></div></div>
+</div>
+<div class="ct" style="font-size:12px;margin-top:12px"><span class="ic">🔩</span>五金/其他</div>
+<div id="qhl"></div>
+<div class="fr c2" style="margin-top:4px">
+<div class="fg"><label>品名</label><input type="text" id="qhn" class="fi" placeholder="例：鉸鏈" style="padding-right:10px"></div>
+<div class="fg"><label>金額</label><div class="iw"><input type="number" id="qhc" step="any" placeholder="0"><span class="iu">元</span></div></div>
+</div>
+<button class="ba" onclick="addHW()" style="margin-bottom:10px">＋ 加入五金</button>
+<div class="ct" style="font-size:12px;margin-top:4px"><span class="ic">📊</span>利潤</div>
+<div class="fr c2">
+<div class="fg"><label>利潤率</label><div class="iw"><input type="number" id="qm" value="30" step="any" oninput="calcQ()"><span class="iu">%</span></div></div>
+<div class="fg">&nbsp;</div>
+</div>
+<div id="qres" class="qs" style="display:none"></div>
+<button class="ba" onclick="cpQ()" style="margin-top:6px" id="qcb" disabled>📄 複製報價</button>
+</div></div>
+
+<!-- ===== PAGE: CONVERT ===== -->
+<div id="pg-convert" class="pg">
+<div class="cd">
+<div class="ct"><span class="ic">🔄</span>材積單位互轉</div>
+<div class="fr c2">
+<div class="fg"><label>數值</label><div class="iw"><input type="number" id="cvv" step="any" placeholder="0" oninput="doCv()"></div></div>
+<div class="fg"><label>單位</label><select id="cvf" onchange="doCv()"><option value="cai">台才</option><option value="shi">材(石)</option><option value="bf">板呎</option><option value="m3">m³</option><option value="cm3">cm³</option></select></div>
+</div>
+<div class="rp show" style="display:block;margin-top:8px">
+<div class="rc rc3">
+<div class="ci"><div class="cl">台才</div><div class="cv" id="xca">—</div></div>
+<div class="ci"><div class="cl">材(石)</div><div class="cv" id="xsh">—</div></div>
+<div class="ci"><div class="cl">板呎</div><div class="cv" id="xbf">—</div></div>
+<div class="ci"><div class="cl">m³</div><div class="cv" id="xm3">—</div></div>
+<div class="ci"><div class="cl">cm³</div><div class="cv" id="xc3">—</div></div>
+<div class="ci"><div class="cl">立方台尺</div><div class="cv" id="xcf">—</div></div>
+</div></div></div>
+<div class="cd">
+<div class="ct"><span class="ic">📏</span>長度互轉</div>
+<div class="fr c2">
+<div class="fg"><label>數值</label><div class="iw"><input type="number" id="lvv" step="any" placeholder="0" oninput="doLv()"></div></div>
+<div class="fg"><label>單位</label><select id="lvf" onchange="doLv()"><option value="cm">公分</option><option value="inch">英吋</option><option value="chi">台尺</option><option value="cun">台寸</option><option value="mm">公厘</option></select></div>
+</div>
+<div class="rp show" style="display:block;margin-top:8px">
+<div class="rc rc3">
+<div class="ci"><div class="cl">公分</div><div class="cv" id="lcm">—</div></div>
+<div class="ci"><div class="cl">英吋</div><div class="cv" id="lin">—</div></div>
+<div class="ci"><div class="cl">台尺</div><div class="cv" id="lch">—</div></div>
+<div class="ci"><div class="cl">台寸</div><div class="cv" id="lcn">—</div></div>
+<div class="ci"><div class="cl">公厘</div><div class="cv" id="lmm">—</div></div>
+<div class="ci"><div class="cl">公尺</div><div class="cv" id="lmt">—</div></div>
+</div></div></div></div>
+
+<!-- ===== PAGE: REF ===== -->
+<div id="pg-ref" class="pg">
+<div class="cd"><div class="ct"><span class="ic">📖</span>單位定義</div>
+<table class="rt"><tr><th>單位</th><th>定義</th><th>換算</th></tr>
+<tr><td>1台才</td><td>1台尺×1台尺×1台寸</td><td>≈27,818 cm³</td></tr>
+<tr><td>1材(石)</td><td>1台尺×1台尺×10台尺</td><td>=10台才</td></tr>
+<tr><td>1板呎</td><td>1"×12"×12"</td><td>=2,360 cm³</td></tr>
+<tr><td>1台尺</td><td></td><td>=30.303 cm</td></tr>
+<tr><td>1台寸</td><td>=1/10台尺</td><td>=3.0303 cm</td></tr></table></div>
+<div class="cd"><div class="ct"><span class="ic">🪚</span>損耗率參考</div>
+<table class="rt"><tr><th>加工類型</th><th>建議</th><th>說明</th></tr>
+<tr><td>裁切+刨光</td><td>10~15%</td><td>鋸路3~5mm+刨光</td></tr>
+<tr><td>實木拼板</td><td>15~20%</td><td>修邊、截頭尾</td></tr>
+<tr><td>曲線/異形</td><td>20~30%</td><td>利用率較低</td></tr>
+<tr><td>原木製材</td><td>30~45%</td><td>含邊皮芯材淘汰</td></tr></table></div>
+<div class="cd"><div class="ct"><span class="ic">🌳</span>常見角材(才)</div>
+<table class="rt"><tr><th>規格cm</th><th>6尺</th><th>8尺</th><th>12尺</th></tr>
+<tr><td>3×6</td><td>1.18</td><td>1.57</td><td>2.36</td></tr>
+<tr><td>4×4</td><td>1.05</td><td>1.40</td><td>2.10</td></tr>
+<tr><td>4×8</td><td>2.11</td><td>2.80</td><td>4.21</td></tr>
+<tr><td>6×6</td><td>2.37</td><td>3.15</td><td>4.73</td></tr>
+<tr><td>6×12</td><td>4.73</td><td>6.29</td><td>9.46</td></tr>
+<tr><td>12×12</td><td>9.46</td><td>12.58</td><td>18.91</td></tr></table></div>
+<div class="cd"><div class="ct"><span class="ic">🪵</span>常見木材比重</div>
+<table class="rt"><tr><th>樹種</th><th>比重</th><th>每才約重g</th></tr>
+<tr><td>檜木</td><td>0.40~0.50</td><td>11,100~13,900</td></tr>
+<tr><td>杉木</td><td>0.30~0.40</td><td>8,345~11,127</td></tr>
+<tr><td>柚木</td><td>0.55~0.70</td><td>15,300~19,473</td></tr>
+<tr><td>白橡木</td><td>0.60~0.72</td><td>16,691~20,029</td></tr>
+<tr><td>胡桃木</td><td>0.55~0.65</td><td>15,300~18,082</td></tr>
+<tr><td>花梨木</td><td>0.80~1.00</td><td>22,254~27,818</td></tr></table></div>
+</div>
+
+<div class="ft">方禾家具 ─ 木工計算工具箱 v2.0</div>
+</div>
+<script>
+const CHI=30.303,CUN=3.0303,INCH=2.54,CAI=CHI*CHI*CUN,BFC=INCH*12*INCH*12*INCH;
+const COLS=['#E57373','#64B5F6','#81C784','#FFD54F','#BA68C8','#4DD0E1','#FF8A65','#A1887F','#90A4AE','#F06292'];
+function f(n,d=2){if(n===0)return'0';if(Math.abs(n)>=10000)return n.toLocaleString('zh-TW',{maximumFractionDigits:d});return parseFloat(n.toFixed(d)).toString();}
+function $(id){return document.getElementById(id);}
+
+// Nav
+function goPage(n,el){document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));$('pg-'+n).classList.add('on');el.classList.add('on');window.scrollTo({top:0,behavior:'smooth'});}
+function sTab(pg,sub,el){const p=$('pg-'+pg);p.querySelectorAll('.sc').forEach(c=>c.classList.remove('on'));p.querySelectorAll('.stb').forEach(t=>t.classList.remove('on'));$(pg+'-'+sub).classList.add('on');el.classList.add('on');}
+
+// === TIMBER ===
+let cU='cm',bU='cm',bI=[];
+function setU(u,btn){cU=u;btn.parentElement.querySelectorAll('.ub').forEach(b=>b.classList.remove('on'));btn.classList.add('on');if(u==='chi'){$('icm').style.display='none';$('ichi').style.display='grid';}else{$('icm').style.display='grid';$('ichi').style.display='none';const x=u==='cm'?'cm':'in';$('ul').textContent=x;$('uw').textContent=x;$('ut').textContent=x;}}
+function setBU(u,btn){bU=u;btn.parentElement.querySelectorAll('.ub').forEach(b=>b.classList.remove('on'));btn.classList.add('on');if(u==='chi'){$('bcm').style.display='none';$('bchi').style.display='grid';}else{$('bcm').style.display='grid';$('bchi').style.display='none';const x=u==='cm'?'cm':'in';$('bul').textContent=x;$('buw').textContent=x;$('but').textContent=x;}}
+
+function gD(p,u){
+if(u==='chi'){const l=parseFloat($(p+'lc').value)||0,w=parseFloat($(p+'wc').value)||0,t=parseFloat($(p+'tc').value)||0;return{l:l*CHI,w:w*CHI,t:t*CUN,rl:l,rw:w,rt:t};}
+const l=parseFloat($(p+'l').value)||0,w=parseFloat($(p+'w').value)||0,t=parseFloat($(p+'t').value)||0;const k=u==='inch'?INCH:1;return{l:l*k,w:w*k,t:t*k,rl:l,rw:w,rt:t};}
+
+function vol(d,s){if(s==='c'){const r=d.w/2;return Math.PI*r*r*d.l;}return d.l*d.w*d.t;}
+
+function calcS(){
+const d=gD('s',cU),s=$('ss').value,q=parseInt($('sq').value)||1;
+const v=vol(d,s)*q,c=v/CAI,lo=parseFloat($('slo').value)||0;
+$('srm').textContent=f(c,3);$('srs').textContent=f(c/10,4);$('srb').textContent=f(v/BFC,3);
+$('sr3').textContent=f(v/1e6,6);$('src').textContent=f(v,1);
+$('srl').textContent=f(c*(1+lo/100),3)+' 才';$('sr').classList.add('show');}
+
+$('slo').addEventListener('input',function(){const v=parseFloat($('srm').textContent.replace(/,/g,''))||0;$('srl').textContent=f(v*(1+(parseFloat(this.value)||0)/100),3)+' 才';});
+
+function addBI(){
+const d=gD('b',bU),s=$('bs').value,q=parseInt($('bq').value)||1,nm=$('bn').value.trim()||'未命名';
+const v=vol(d,s)*q;if(v<=0){alert('請輸入有效尺寸');return;}
+const ul=bU==='cm'?'cm':bU==='inch'?'in':'尺/寸';
+bI.push({nm,ds:`${f(d.rl)}×${f(d.rw)}×${f(d.rt)} ${ul}`,q,c:v/CAI,sh:s==='c'?'圓':'方'});
+rB();$('bn').value='';['bl','bw','bt','blc','bwc','btc'].forEach(id=>{$(id).value='';});$('bq').value='1';}
+
+function rB(){
+const ls=$('blist'),tw=$('btw');
+if(!bI.length){ls.innerHTML='<div class="es"><div class="ic">📭</div><div>尚無項目</div></div>';tw.style.display='none';return;}
+ls.innerHTML=bI.map((it,i)=>`<div class="bi"><div class="bi-i"><strong>${it.nm}</strong> ${it.sh} ${it.ds} ×${it.q}</div><div class="bi-r">${f(it.c,3)}才</div><button class="bd" onclick="bI.splice(${i},1);rB();">✕</button></div>`).join('');
+tw.style.display='block';updBT();}
+
+function updBT(){const t=bI.reduce((s,i)=>s+i.c,0),lo=parseFloat($('blo').value)||0;$('btv').textContent=f(t,3)+' 才';$('blv').textContent=f(t*(1+lo/100),3)+' 才';}
+function clrB(){if(bI.length&&confirm('確定清空？')){bI=[];rB();}}
+
+function expB(){
+const lo=parseFloat($('blo').value)||0,t=bI.reduce((s,i)=>s+i.c,0);
+let tx='【方禾家具 用料清單】\n日期：'+new Date().toLocaleDateString('zh-TW')+'\n'+'─'.repeat(26)+'\n';
+bI.forEach((it,i)=>{tx+=`${i+1}. ${it.nm} ${it.sh} ${it.ds} ×${it.q} → ${f(it.c,3)}才\n`;});
+tx+='─'.repeat(26)+`\n合計：${f(t,3)}才\n損耗${lo}%\n備料：${f(t*(1+lo/100),3)}才\n`;
+navigator.clipboard.writeText(tx).then(()=>alert('已複製！'));}
+
+// === CUT OPTIMIZER ===
+let cP=[];
+function addCP(){
+const l=parseFloat($('cpl2').value)||0,w=parseFloat($('cpw').value)||0,q=parseInt($('cpq').value)||1,nm=$('cpn').value.trim()||`部件${cP.length+1}`;
+if(l<=0||w<=0){alert('請輸入尺寸');return;}
+cP.push({l,w,q,nm});rCP();$('cpl2').value='';$('cpw').value='';$('cpq').value='1';$('cpn').value='';}
+
+function rCP(){
+$('cpl').innerHTML=cP.length?cP.map((p,i)=>`<div class="bi"><div class="bi-i" style="color:${COLS[i%COLS.length]};font-weight:600">${p.nm} ${p.l}×${p.w}cm ×${p.q}</div><button class="bd" onclick="cP.splice(${i},1);rCP();">✕</button></div>`).join(''):'<div class="es" style="padding:10px">尚無部件</div>';}
+rCP();
+
+function runCO(){
+if(!cP.length){alert('請先加入部件');return;}
+const BL=parseFloat($('cbl').value)||240,BW=parseFloat($('cbw').value)||120,kf=parseFloat($('ckf').value)||0.3;
+let pcs=[];cP.forEach((p,ci)=>{for(let i=0;i<p.q;i++)pcs.push({l:p.l,w:p.w,nm:p.nm,ci});});
+pcs.sort((a,b)=>(b.l*b.w)-(a.l*a.w));
+let bds=[];
+function tryP(pc,bd){
+for(let sh of bd.sh){if(sh.x+pc.l+kf<=BL+.01&&pc.w<=sh.h+.01){sh.x+=pc.l+kf;bd.pc.push({x:sh.x-pc.l-kf,y:sh.y,l:pc.l,w:pc.w,nm:pc.nm,ci:pc.ci});return true;}
+if(sh.x+pc.w+kf<=BL+.01&&pc.l<=sh.h+.01){sh.x+=pc.w+kf;bd.pc.push({x:sh.x-pc.w-kf,y:sh.y,l:pc.w,w:pc.l,nm:pc.nm,ci:pc.ci});return true;}}
+const ls=bd.sh[bd.sh.length-1],ny=ls.y+ls.h+kf;
+if(pc.l<=BL+.01&&ny+pc.w<=BW+.01){bd.sh.push({x:pc.l+kf,y:ny,h:pc.w});bd.pc.push({x:0,y:ny,l:pc.l,w:pc.w,nm:pc.nm,ci:pc.ci});return true;}
+if(pc.w<=BL+.01&&ny+pc.l<=BW+.01){bd.sh.push({x:pc.w+kf,y:ny,h:pc.l});bd.pc.push({x:0,y:ny,l:pc.w,w:pc.l,nm:pc.nm,ci:pc.ci});return true;}
+return false;}
+
+for(let pc of pcs){let ok=false;for(let bd of bds){if(tryP(pc,bd)){ok=true;break;}}
+if(!ok){const nb={sh:[],pc:[]};
+if(pc.l<=BL&&pc.w<=BW){nb.sh=[{x:pc.l+kf,y:0,h:pc.w}];nb.pc=[{x:0,y:0,l:pc.l,w:pc.w,nm:pc.nm,ci:pc.ci}];}
+else if(pc.w<=BL&&pc.l<=BW){nb.sh=[{x:pc.w+kf,y:0,h:pc.l}];nb.pc=[{x:0,y:0,l:pc.w,w:pc.l,nm:pc.nm,ci:pc.ci}];}
+else{alert(`「${pc.nm}」(${pc.l}×${pc.w})超過板材！`);return;}
+bds.push(nb);}}
+
+const tA=bds.length*BL*BW,uA=pcs.reduce((s,p)=>s+p.l*p.w,0);
+$('crs').textContent=bds.length+'片';$('cru').textContent=f(uA/tA*100,1)+'%';$('crw').textContent=f(tA-uA,0)+'cm²';
+$('cres').style.display='block';
+
+const ct=$('cbd');ct.innerHTML='';const sc=Math.min(320/BL,180/BW);
+bds.forEach((bd,bi)=>{
+const wp=document.createElement('div');wp.style.cssText='margin-bottom:10px;';
+wp.innerHTML=`<div style="font-size:11px;font-weight:600;color:var(--tm);margin-bottom:3px">第${bi+1}片 (${BL}×${BW}cm)</div>`;
+const cv=document.createElement('canvas');cv.width=BL*sc+16;cv.height=BW*sc+16;cv.style.cssText='border:1px solid var(--wp);border-radius:5px;background:#FFF;display:block;max-width:100%';
+wp.appendChild(cv);ct.appendChild(wp);
+const cx=cv.getContext('2d'),ox=8,oy=8;
+cx.strokeStyle='#8D6E63';cx.lineWidth=2;cx.strokeRect(ox,oy,BL*sc,BW*sc);
+bd.pc.forEach(p=>{const c=COLS[p.ci%COLS.length];cx.fillStyle=c+'33';cx.fillRect(ox+p.x*sc,oy+p.y*sc,p.l*sc,p.w*sc);cx.strokeStyle=c;cx.lineWidth=1.5;cx.strokeRect(ox+p.x*sc,oy+p.y*sc,p.l*sc,p.w*sc);cx.fillStyle='#333';cx.font=`${Math.max(8,Math.min(11,p.l*sc/6))}px sans-serif`;cx.textAlign='center';cx.textBaseline='middle';cx.fillText(p.nm.slice(0,4),ox+p.x*sc+p.l*sc/2,oy+p.y*sc+p.w*sc/2);});});}
+
+// === ANGLE ===
+function calcPG(){
+const n=parseInt($('ags').value),sd=parseFloat($('agsd').value)||0;
+const mt=180/n,inn=(n-2)*180/n,cr=sd/Math.sin(Math.PI/n);
+$('pgm').textContent=f(mt,2)+'°';$('pgi').textContent=f(inn,2)+'°';$('pgc').textContent=f(cr,1)+'cm';
+const cv=$('pgcv'),cx=cv.getContext('2d'),W=cv.width,H=cv.height;cx.clearRect(0,0,W,H);if(sd<=0)return;
+const mx=W/2,my=H/2+3,R=Math.min(W,H)*.37;
+cx.beginPath();for(let i=0;i<=n;i++){const a=-Math.PI/2+(2*Math.PI*i)/n;const x=mx+R*Math.cos(a),y=my+R*Math.sin(a);if(i===0)cx.moveTo(x,y);else cx.lineTo(x,y);}
+cx.strokeStyle='#5D4037';cx.lineWidth=2.5;cx.stroke();cx.fillStyle='rgba(249,168,37,.1)';cx.fill();
+const a0=-Math.PI/2,a1=-Math.PI/2+(2*Math.PI)/n,an=-Math.PI/2-(2*Math.PI)/n+2*Math.PI;
+const vx=mx+R*Math.cos(a0),vy=my+R*Math.sin(a0);
+cx.beginPath();cx.arc(vx,vy,18,a1+Math.PI,an+Math.PI,false);cx.strokeStyle='#F9A825';cx.lineWidth=2;cx.stroke();
+cx.fillStyle='#5D4037';cx.font='bold 11px sans-serif';cx.textAlign='center';cx.fillText(f(inn,1)+'°',vx,vy-24);
+cx.fillStyle='#8D6E63';cx.font='10px sans-serif';cx.fillText('鋸台 '+f(mt,1)+'°',mx,my+R+16);}
+calcPG();
+
+function calcMT(){$('mtc').textContent=f((parseFloat($('mta').value)||0)/2,2)+'°';}
+function calcTR(){
+let a=parseFloat($('ta').value)||0,b=parseFloat($('tb').value)||0,c=parseFloat($('tc').value)||0;
+const n=(a>0?1:0)+(b>0?1:0)+(c>0?1:0);
+if(n<2){['tra','trb','trc','trA','trB','trS'].forEach(id=>$(id).textContent='—');return;}
+if(!c&&a&&b)c=Math.sqrt(a*a+b*b);else if(!a&&b&&c)a=Math.sqrt(c*c-b*b);else if(!b&&a&&c)b=Math.sqrt(c*c-a*a);
+if(isNaN(a)||isNaN(b)||isNaN(c)||a<=0||b<=0||c<=0){['tra','trb','trc','trA','trB','trS'].forEach(id=>$(id).textContent='無效');return;}
+const A=Math.atan2(b,a)*180/Math.PI;
+$('tra').textContent=f(a,3)+'cm';$('trb').textContent=f(b,3)+'cm';$('trc').textContent=f(c,3)+'cm';
+$('trA').textContent=f(A,2)+'°';$('trB').textContent=f(90-A,2)+'°';$('trS').textContent=f(b/a*100,1)+'%';}
+
+// === SPACING ===
+function calcSP(){
+const t=parseFloat($('spt').value)||0,n=parseInt($('spn').value)||2,os=parseFloat($('sps').value)||0,oe=parseFloat($('spe').value)||0;
+const u=t-os-oe,g=u/(n-1);
+let h=`<div class="sri"><span class="sl">間距</span><span class="sv">${f(g,3)} cm</span></div><div style="font-size:10px;color:var(--tl);margin:6px 0 3px">各點位置：</div>`;
+for(let i=0;i<n;i++)h+=`<div class="sri"><span class="sl">第${i+1}點</span><span class="sv">${f(os+g*i,2)} cm</span></div>`;
+$('spr').innerHTML=h;}
+calcSP();
+
+function calcCH(){
+const r=parseFloat($('chr').value)||0,n=parseInt($('chn').value)||2,s0=parseFloat($('chs').value)||0;
+const st=360/n;let h=`<div class="sri"><span class="sl">孔間角度</span><span class="sv">${f(st,2)}°</span></div><div style="font-size:10px;color:var(--tl);margin:6px 0 3px">各孔座標：</div>`;
+for(let i=0;i<n;i++){const dg=s0+st*i,rd=dg*Math.PI/180;h+=`<div class="sri"><span class="sl">#${i+1} (${f(dg,1)}°)</span><span class="sv">X:${f(r*Math.cos(rd),2)} Y:${f(r*Math.sin(rd),2)}</span></div>`;}
+$('chres').innerHTML=h;}
+calcCH();
+
+// === QUOTE ===
+let hw=[];
+function addHW(){const nm=$('qhn').value.trim()||'其他',c=parseFloat($('qhc').value)||0;if(c<=0){alert('請輸入金額');return;}hw.push({nm,c});rHW();$('qhn').value='';$('qhc').value='';calcQ();}
+function rHW(){$('qhl').innerHTML=hw.map((h,i)=>`<div class="bi"><div class="bi-i">${h.nm}</div><div class="bi-r">$${f(h.c,0)}</div><button class="bd" onclick="hw.splice(${i},1);rHW();calcQ();">✕</button></div>`).join('');}
+
+function calcQ(){
+const c=parseFloat($('qc').value)||0,p=parseFloat($('qp').value)||0,lo=parseFloat($('ql').value)||0;
+const h=parseFloat($('qh').value)||0,r=parseFloat($('qr').value)||0,mg=parseFloat($('qm').value)||0;
+const mc=c*(1+lo/100)*p,lc=h*r,hc=hw.reduce((s,x)=>s+x.c,0),sub=mc+lc+hc,pf=sub*mg/100,tot=sub+pf;
+$('qres').style.display='block';$('qcb').disabled=false;
+$('qres').innerHTML=`<div class="qr"><span class="ql">材料 (${f(c,1)}才×${f(1+lo/100,2)}×$${f(p,0)})</span><span class="qv">$${f(mc,0)}</span></div>
+<div class="qr"><span class="ql">工時 (${f(h,1)}hr×$${f(r,0)})</span><span class="qv">$${f(lc,0)}</span></div>
+<div class="qr"><span class="ql">五金 (${hw.length}項)</span><span class="qv">$${f(hc,0)}</span></div>
+<div class="qr"><span class="ql">小計</span><span class="qv">$${f(sub,0)}</span></div>
+<div class="qr"><span class="ql">利潤 (${f(mg,0)}%)</span><span class="qv">$${f(pf,0)}</span></div>
+<div class="qt"><span>報價總計</span><span>$${f(tot,0)}</span></div>`;}
+
+function cpQ(){
+const c=parseFloat($('qc').value)||0,p=parseFloat($('qp').value)||0,lo=parseFloat($('ql').value)||0;
+const h=parseFloat($('qh').value)||0,r=parseFloat($('qr').value)||0,mg=parseFloat($('qm').value)||0;
+const mc=c*(1+lo/100)*p,lc=h*r,hc=hw.reduce((s,x)=>s+x.c,0),sub=mc+lc+hc,tot=sub*(1+mg/100);
+let tx=`【方禾家具 報價】\n${new Date().toLocaleDateString('zh-TW')}\n${'─'.repeat(24)}\n材料：$${f(mc,0)} (${f(c,1)}才,損耗${lo}%,$${f(p,0)}/才)\n工時：$${f(lc,0)} (${f(h,1)}hr×$${f(r,0)})\n`;
+if(hw.length){tx+=`五金：$${f(hc,0)}\n`;hw.forEach(x=>{tx+=`  - ${x.nm}: $${f(x.c,0)}\n`;});}
+tx+=`${'─'.repeat(24)}\n小計：$${f(sub,0)}\n利潤(${mg}%)：$${f(tot-sub,0)}\n總計：$${f(tot,0)}\n`;
+navigator.clipboard.writeText(tx).then(()=>alert('已複製！'));}
+
+// === CONVERT ===
+function doCv(){
+const v=parseFloat($('cvv').value)||0,fr=$('cvf').value;let c=0;
+switch(fr){case'cai':c=v*CAI;break;case'shi':c=v*CAI*10;break;case'bf':c=v*BFC;break;case'm3':c=v*1e6;break;case'cm3':c=v;break;}
+$('xca').textContent=v===0?'—':f(c/CAI,4);$('xsh').textContent=v===0?'—':f(c/CAI/10,5);
+$('xbf').textContent=v===0?'—':f(c/BFC,4);$('xm3').textContent=v===0?'—':f(c/1e6,6);
+$('xc3').textContent=v===0?'—':f(c,2);$('xcf').textContent=v===0?'—':f(c/(CHI*CHI*CHI),5);}
+
+function doLv(){
+const v=parseFloat($('lvv').value)||0,fr=$('lvf').value;let c=0;
+switch(fr){case'cm':c=v;break;case'inch':c=v*INCH;break;case'chi':c=v*CHI;break;case'cun':c=v*CUN;break;case'mm':c=v/10;break;}
+$('lcm').textContent=v===0?'—':f(c,3);$('lin').textContent=v===0?'—':f(c/INCH,3);
+$('lch').textContent=v===0?'—':f(c/CHI,4);$('lcn').textContent=v===0?'—':f(c/CUN,3);
+$('lmm').textContent=v===0?'—':f(c*10,2);$('lmt').textContent=v===0?'—':f(c/100,4);}
+
+// Enter key
+document.addEventListener('keydown',e=>{if(e.key!=='Enter')return;const ap=document.querySelector('.pg.on');if(!ap)return;const id=ap.id;
+if(id==='pg-timber'){const s=document.querySelector('#pg-timber .sc.on');if(s&&s.id==='timber-single')calcS();else if(s&&s.id==='timber-batch')addBI();}});
+
+// SW
+if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').then(r=>console.log('SW:',r.scope)).catch(e=>console.log('SW err:',e));}
+</script>
+</body>
+</html>
